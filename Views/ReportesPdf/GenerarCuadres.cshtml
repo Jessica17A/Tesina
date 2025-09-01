@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Generar Reporte de Cuadres";
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+    Layout = "~/Views/Shared/_Vendedor.cshtml";
+}
+
+<div class="container mt-4">
+    <h1 class="text-center">Generar Reporte en PDF</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Selecciona las Fechas</h5>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                <input type="date" id="fechaInicio" class="form-control input-lg" style="height: 45px; width: 100%;" />
+            </div>
+
+            <div class="mb-4">
+                <label for="fechaFin" class="form-label">Fecha de Fin:</label>
+                <input type="date" id="fechaFin" class="form-control input-lg" style="height: 45px; width: 100%;" />
+            </div>
+
+            <button id="btnGenerarPdfCuadres" class="btn btn-outline-success btn-lg me-2" data-pdf-type="Cuadres">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Cuadres
+            </button>
+            <button id="btnGenerarPdfVentas" class="btn btn-outline-danger btn-lg" data-pdf-type="Ventas">
+                <i class="bi bi-file-earmark-pdf-fill"></i> Ventas
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.js"></script>
+    <script>
+        $(document).ready(function () {
+            function generarPDF(tipoReporte) {
+                var fechaInicio = $('#fechaInicio').val();
+                var fechaFin = $('#fechaFin').val();
+
+                if (!fechaInicio) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor, seleccione una fecha de inicio.'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Generando PDF...',
+                    text: 'Por favor, espere hasta que se realice la descarga',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                setTimeout(function () {
+                    Swal.close();
+                    var url = tipoReporte === 'Cuadres'
+                        ? '@Url.Action("GenerarPDF", "ReportesPdf")'
+                        : '@Url.Action("GenerarPDFVentas", "ReportesPdf")';
+                    window.location.href = url + '?fechaInicio=' + fechaInicio + (fechaFin ? '&fechaFin=' + fechaFin : '');
+                }, 3500);
+            }
+
+            // Asignar el evento click a ambos botones con un solo handler
+            $('[data-pdf-type]').click(function () {
+                var tipoReporte = $(this).data('pdf-type');
+                generarPDF(tipoReporte);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,26 @@
+﻿@* @model WebGradu.Models.Venta
+
+<h4>Detalles de la Venta #@Model.Id</h4>
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr>
+            <th>Código Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>SubTotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var detalle in Model.DetalleVentas)
+        {
+            <tr>
+                <td>@detalle.CodigoProducto</td>
+                <td>@detalle.Cantidad</td>
+                <td>@detalle.PrecioUnitario.</td>
+                <td>@detalle.SubTotal</td>
+            </tr>
+        }
+    </tbody>
+</table>
+ *@

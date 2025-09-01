@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión y Visión - Tienda de Ropa Usada</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .carousel-item {
+            height: 400px; /* Altura fija para las diapositivas */
+            background-color: white; /* Fondo blanco para las diapositivas */
+            display: flex;
+            align-items: center; /* Centra verticalmente */
+            justify-content: center; /* Centra horizontalmente */
+            flex-direction: column; /* Apila los elementos en columna */
+            padding: 20px; /* Espaciado interior */
+            border-radius: 10px; /* Bordes redondeados */
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+        }
+
+            .carousel-item h5 {
+                font-size: 1.5rem; /* Tamaño del título */
+                font-weight: bold; /* Negrita para el título */
+            }
+
+            .carousel-item p {
+                font-size: 1.1rem; /* Tamaño del texto */
+                text-align: center; /* Alinear texto al centro */
+            }
+
+            .carousel-item img {
+                max-width: 100%; /* Ancho máximo para la imagen */
+                height: auto; /* Altura automática */
+                border-radius: 10px; /* Bordes redondeados para la imagen */
+                margin-bottom: 15px; /* Espaciado inferior para la imagen */
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Nuestra Misión y Visión</h1>
+        <div id="missionVisionCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="~/images/mission-image.jpg" alt="Misión" class="img-fluid">
+                    <h5>Nuestra Misión</h5>
+                    <p>Proporcionar ropa de calidad y asequible, contribuyendo a la sostenibilidad y fomentando el consumo responsable. Creemos que cada prenda tiene una historia y una segunda oportunidad, y estamos aquí para hacer que eso suceda.</p>
+                </div>
+                <div class="carousel-item">
+                    <img src="~/images/vision-image.jpg" alt="Visión" class="img-fluid">
+                    <h5>Nuestra Visión</h5>
+                    <p>Ser la tienda de referencia en ropa usada, destacando por nuestra calidad y compromiso con el medio ambiente. Queremos inspirar a otros a unirse a la moda sostenible y a hacer elecciones más conscientes.</p>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#missionVisionCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#missionVisionCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (opcional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

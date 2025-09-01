@@ -1,0 +1,37 @@
+﻿@model IEnumerable<WebGradu.Models.ProductoMasVendidoViewModel>
+
+@{
+    ViewData["Title"] = "Productos Más Vendidos";
+    var productos = Model.Select(p => p.NombreProducto).ToArray();
+    var totalVendidos = Model.Select(p => p.TotalVendidos).ToArray();
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+   
+}
+
+<h2>Productos Más Vendidos</h2>
+
+<canvas id="productosMasVendidosChart" width="400" height="200"></canvas>
+
+<script>
+    var ctx = document.getElementById('productosMasVendidosChart').getContext('2d');
+    var productosMasVendidosChart = new Chart(ctx, {
+        type: 'bar', // Tipo de gráfico: barra
+        data: {
+            labels: @Html.Raw(Json.Serialize(productos)), // Nombres de los productos
+            datasets: [{
+                label: 'Total Vendidos',
+                data: @Html.Raw(Json.Serialize(totalVendidos)), // Total vendidos
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de las barras
+                borderColor: 'rgba(54, 162, 235, 1)', // Color del borde de las barras
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true // Asegurar que el gráfico empiece en 0
+                }
+            }
+        }
+    });
+</script>

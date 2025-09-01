@@ -1,0 +1,61 @@
+﻿@model IEnumerable<WebGradu.Models.Categoria>
+
+@{
+    ViewData["Title"] = "Listado de Categorías";
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+}
+
+<div class="container mt-5" style="max-width: 900px;">
+    <div class="col-12 text-center">
+        <h1>Listado de Categorías</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 text-center">
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Crear una Nueva
+        </a>
+    </div>
+</div>
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-end">
+        <form asp-action="Index" method="get" class="d-flex">
+            <div class="form-group d-flex">
+                <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control" placeholder="Buscar" style="width: 300px; margin-right: 10px;"> <!-- Ancho reducido -->
+                <button type="submit" class="btn btn-info btn-sm">
+                    <!-- Clase btn-sm para un botón más pequeño -->
+                    <i class="bi bi-search"></i> Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table">
+    <thead class="table-primary">
+        <tr>
+            <th>Nombre de la categoría</th>
+            <th>Descripción</th>
+            <th>Fecha de Creación</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.NombreCategoria)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Descripcion)</td>
+                    <td>@Html.DisplayFor(modelItem => item.FechaCreacion)</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.CategoriaID" class="btn btn-warning btn-sm" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a> |
+                        <a asp-action="Details" asp-route-id="@item.CategoriaID" class="btn btn-info btn-sm" title="Detalles">
+                            <i class="bi bi-info-circle"></i>
+                        </a>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>

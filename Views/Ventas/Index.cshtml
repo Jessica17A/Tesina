@@ -1,0 +1,128 @@
+﻿@model IEnumerable<WebGradu.Models.Venta>
+
+@{
+    ViewData["Title"] = "Ventas Realizadas";
+
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "~/Views/Shared/_Plantilla.cshtml";
+    }
+    else if (User.IsInRole("Vendedor"))
+    {
+        Layout = "~/Views/Shared/_Vendedor.cshtml";
+    }
+}
+
+
+<center>
+    <h2 style="margin-top: 20px;">
+        <i class="fa-sharp fa-solid fa-cart-plus fa-fade" style="margin-right: 10px; color: #FFD43B;"></i>
+        HISTORIAL DE VENTAS
+    </h2>
+</center>
+
+<form method="get" asp-action="Index">
+
+
+
+    <div class="mb-3">
+        <label class="form-label">Filtrar por:</label>
+        <div class="barra-filtros p-3" style="background-color: #e2e6ea; border-radius: 5px; display: flex; align-items: center;">
+            <div class="form-check me-3">
+                <input type="radio" id="hoy" name="filtro" value="hoy" class="form-check-input" />
+                <label for="hoy" class="form-check-label">Hoy</label>
+            </div>
+            <div class="form-check me-3">
+                <input type="radio" id="ayer" name="filtro" value="ayer" class="form-check-input" />
+                <label for="ayer" class="form-check-label">Ayer</label>
+            </div>
+            <div class="form-check me-3">
+                <input type="radio" id="ultimos7" name="filtro" value="ultimos7" class="form-check-input" />
+                <label for="ultimos7" class="form-check-label">Últimos 7 días</label>
+            </div>
+            <div class="form-check me-3">
+                <input type="radio" id="ultimoMes" name="filtro" value="ultimoMes" class="form-check-input" />
+                <label for="ultimoMes" class="form-check-label">Último mes</label>
+            </div>
+            <div class="form-check me-3">
+                <input type="radio" id="rango" name="filtro" value="rango" class="form-check-input" />
+                <label for="rango" class="form-check-label">Rango</label>
+                <label for="fechaInicio" class="ms-2">Desde:</label>
+                <input type="date" id="fechaInicio" name="fechaInicio" class="form-control d-inline-block" style="width: auto; margin-left: 5px; border-radius: 0.25rem; border: 1px solid #ced4da;" />
+                <label for="fechaFin" class="ms-2">Hasta:</label>
+                <input type="date" id="fechaFin" name="fechaFin" class="form-control d-inline-block" style="width: auto; margin-left: 5px; border-radius: 0.25rem; border: 1px solid #ced4da;" />
+            </div>
+            <button type="submit" class="btn btn-primary ms-3">Filtrar</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered mt-4">
+    <thead>
+        <tr style="background-color: #E3D52D;">
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Detalles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center">No se encontraron ventas.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var venta in Model)
+            {
+                <tr>
+                    <td>@venta.UsuarioId</td>
+                    <td>@venta.Fecha.ToShortDateString()</td>
+                    <td>@venta.Total</td>
+                    <td>
+                        <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#detalles-@venta.Id" aria-expanded="false" aria-controls="detalles-@venta.Id" style="background-color: #28a745; color: white;" title="Ver Detalles">
+                            <i class="fa-solid fa-list-check"></i>
+                        </button>
+                    </td>
+                </tr>
+                <tr class="collapse" id="detalles-@venta.Id">
+                    <td colspan="4">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr style="background-color: #E3DC78;">
+                                    <th>Código Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>SubTotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (venta.DetalleVentas != null && venta.DetalleVentas.Any())
+                                {
+                                    foreach (var detalle in venta.DetalleVentas)
+                                    {
+                                        <tr>
+                                            <td>@detalle.Producto?.Codigo_Producto</td>
+                                            <td>@detalle.Cantidad</td>
+                                            <td>@detalle.PrecioUnitario</td>
+                                            <td>@(detalle.PrecioUnitario * detalle.Cantidad)</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center">No hay detalles disponibles.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

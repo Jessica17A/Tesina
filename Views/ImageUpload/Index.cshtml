@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Subir Imagen";
+}
+
+<h1>Subir Imagen</h1>
+
+<form asp-action="Upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <button type="submit">Subir Imagen</button>
+</form>
+
+@if (TempData["imgUrl"] != null)
+{
+    <p>Imagen cargada correctamente: <a href="@TempData["imgUrl"]">@TempData["imgUrl"]</a></p>
+    <img src="@TempData["imgUrl"]" alt="Imagen cargada" />
+}

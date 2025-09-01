@@ -1,0 +1,34 @@
+﻿@model IEnumerable<dynamic>
+
+@{
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+}
+
+<h1 class="text-center mt-4">
+    <i class="fa-solid fa-users fa-fade" style="color: blue;"></i>
+    LISTADO DE USUARIOS
+</h1>
+
+<div class="mt-4 table-responsive"> <!-- Agregar clase table-responsive -->
+    <table class="table table-striped table-hover">
+        <thead style="background-color: #007bff; color: white;"> 
+            <tr>
+                <th>Usuario</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Rol</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                    <tr>
+                        <td>@user.UserName</td>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>@user.Rol</td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+</div>

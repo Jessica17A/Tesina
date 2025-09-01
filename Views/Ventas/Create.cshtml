@@ -1,0 +1,22 @@
+﻿
+@model WebGradu.Models.Venta
+
+<h2>Crear Venta</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <h3>Detalles de la Venta</h3>
+        <div id="detalles-container">
+            <div class="detalle">
+                <label>Producto ID:</label>
+                <input type="number" name="detalles[0].ProductoId" required />
+                <label>Cantidad:</label>
+                <input type="number" name="detalles[0].Cantidad" required />
+                <label>Precio Unitario:</label>
+                <input type="number" step="0.01" name="detalles[0].PrecioUnitario" required />
+            </div>
+            <!-- Puedes agregar más campos para otros detalles de la venta -->
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Registrar Venta</button>
+</form>

@@ -1,0 +1,52 @@
+﻿
+
+
+@* @if (User.Identity.IsAuthenticated)
+{
+    <script>
+        window.location.href = '@Url.Action("Index", "Home")';
+    </script>
+}
+@else
+{
+ *@
+
+<html>
+<head>
+
+    <body style="background: url('../images/fondocolor.jpg') no-repeat center center fixed; background-size: cover;">
+    <!-- Contenido de tu página aquí -->
+</body>
+
+</head>
+<body>
+    <div class="contenido-con-transparencia">
+        <!-- Contenido con fondo transparente -->
+        <div class="text-center">
+            <img src="/images/LOGO.png" height="300" width="300" alt="Logo del colegio">
+            <br><br>
+            <h1>NOSOTROS</h1>
+            <p>
+                En Colegio Siloe, el aprendizaje es una aventura emocionante y personalizada<br />
+                para cada estudiante. Somos un colegio pequeño con grandes sueños y un equipo<br />
+                comprometido en brindar una educación de calidad.
+            </p>
+            <br>
+            <h1>MISION</h1>
+            <p>
+                Es brindar a cada estudiante la base necesaria para alcanzar su máximo potencial<br>
+                y convertirse en individuos seguros, responsables y exitosos en un mundo en constante<br />
+                evolución. Estamos dedicados a cumplir esta misión a través de un compromiso inquebrantable<br /> 
+                con la educación de calidad y el desarrollo integral de nuestros estudiantes.
+            </p>
+
+
+            <h1>VISION</h1>
+
+            <P>aspiramos a ser un faro de excelencia educativa y desarrollo integral para nuestros estudiantes.<br />
+                Nuestra visión es forjar un futuro brillante para cada niño que pasa por nuestras aulas, inculcando <br />
+                valores, conocimientos y habilidades que les permitan prosperar en un mundo en constante evolución.</P>
+        </div>
+    </div>
+</body>
+</html>

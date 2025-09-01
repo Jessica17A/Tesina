@@ -1,0 +1,49 @@
+﻿@page
+@model WebGradu.Areas.Identity.Pages.Account.LoginModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+
+
+
+<div class="container my-5">
+    <h1 class="text-center" style="color: white;">@ViewData["Title"]</h1>
+    <div class="card login-card" style="max-width: 800px; margin: 0 auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 10px;">
+        <div class="row g-0">
+            <div class="col-md-6 d-flex align-items-center justify-content-center p-4" style="background-color: #f8f9fa; border-top-left-radius: 10px; border-bottom-left-radius: 10px;">
+                <div class="w-100">
+                    <section>
+                        <form id="account" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <h3 class="text-center mb-4" style="color: #007bff;">Acceso a Cuentas</h3>
+                            <div class="form-floating mb-3">
+                                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" style="border-radius: 5px;" />
+                                <label asp-for="Input.Email" class="form-label">Correo Electrónico</label>
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating mb-4">
+                                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" style="border-radius: 5px;" />
+                                <label asp-for="Input.Password" class="form-label">Contraseña</label>
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+                           
+                            <div>
+                                <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary" style="border-radius: 5px;">Acceder</button>
+                            </div>
+                            
+                        </form>
+                    </section>
+                </div>
+            </div>
+            <div class="col-md-6 d-flex align-items-center justify-content-center login-image" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+                <img src="~/images/login.jpg" alt="Img_login" width="400" height="350">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

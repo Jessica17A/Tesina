@@ -1,0 +1,49 @@
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+/* Clase para repetir la animación cada 3 segundos */
+/* Definir la animación */
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Aplicar animación con retraso para repetir cada 5 segundos */
+/*.animate__repeat {
+    animation: fadeInDown 1s ease-in-out forwards, repeat-animation 5s linear infinite;
+    animation-delay: 0s, 1s;*/ /* La animación comienza de inmediato y luego se repite cada 5 segundos */
+/*}*/
+
+/* Animación para repetir */
+/*@keyframes repeat-animation {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}*/

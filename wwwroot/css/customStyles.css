@@ -1,0 +1,98 @@
+﻿@keyframes gradientBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(270deg, #6B73FF, #000DFF, #FF6BBF, #FF5E60);
+    background-size: 400% 400%;
+    animation: gradientBackground 15s ease infinite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.logo {
+    max-width: 150px;
+    margin-bottom: 2rem;
+    animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.message-container {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.message {
+    color: #FFFFFF;
+    font-size: 2rem;
+    font-style: italic;
+    font-family: 'Georgia', serif;
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(50%);
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+
+    80% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-50%);
+    }
+}
+
+.message {
+    animation: fadeInOut 12s ease-in-out infinite;
+    animation-delay: 0s;
+}

@@ -1,0 +1,38 @@
+﻿@model WebGradu.Models.Categoria
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+}
+
+<div class="container mt-5" style="max-width: 800px;">
+    <h1 class="text-center mb-4">Detalles de la Categoría</h1>
+
+    <div class="card p-4 shadow-sm" style="background-color: #f8f9fa; border-radius: 8px;">
+        <h4 class="mb-4">Categoría</h4>
+        <hr />
+
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    <th scope="row" class="pe-3 text-start" style="width: 30%;">Nombre de la Categoría</th>
+                    <td class="text-start">@Html.DisplayFor(model => model.NombreCategoria)</td>
+                </tr>
+                <tr>
+                    <th scope="row" class="pe-3 text-start" style="width: 30%;">Descripción</th>
+                    <td class="text-start">@Html.DisplayFor(model => model.Descripcion)</td>
+                </tr>
+                <tr>
+                    <th scope="row" class="pe-3 text-start" style="width: 30%;">Fecha de Creación</th>
+                    <td class="text-start">@Html.DisplayFor(model => model.FechaCreacion)</td>
+                </tr>
+               
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center mt-4">
+        <a asp-action="Index" class="btn btn-warning">
+            <i class="bi bi-arrow-return-left"></i> Volver a la Lista
+        </a>
+    </div>
+</div>

@@ -1,0 +1,155 @@
+﻿@model IEnumerable<WebGradu.Models.Stock>
+
+@{
+    ViewData["Title"] = "Gestión de Stock";
+    var productosSinStock = ViewData["ProductosSinStock"] as List<WebGradu.Models.Producto> ?? new List<WebGradu.Models.Producto>();
+    var productosConStock = ViewData["ProductosConStock"] as List<WebGradu.Models.Producto> ?? new List<WebGradu.Models.Producto>();
+   
+    var stockDictionary = ViewData["StockDictionary"] as Dictionary<int, WebGradu.Models.Stock> ?? new Dictionary<int, WebGradu.Models.Stock>();
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+}
+
+<div class="container mt-5">
+    <center>
+        <h1>Gestión de Stock</h1>
+    </center>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            @if (productosSinStock.Any()) // Verificar si hay productos sin stock
+            {
+                <div class="d-inline-flex align-items-center p-3" style="background-color: #f8d7da; border-radius: 5px;">
+                    <i class="fa-solid fa-square-xmark" style="color: #dd085d; font-size: 3em;"></i>
+                    <h3 class="mb-0" style="margin-left: 10px;">Sin Stock Inicial</h3>
+                </div>
+            }
+        </div>
+        <div>
+            <form method="get" action="@Url.Action("Buscar", "Stock")" class="d-flex">
+                <input type="text" name="query" placeholder="Buscar producto..." class="form-control me-2" style="width: 200px;">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </div>
+    </div>
+
+    @if (TempData["ActualizacionExitosa"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Se actualizó el stock exitosamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        @foreach (var producto in productosSinStock)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card" style="min-height: 300px;">
+                    <img src="@Url.Content(producto.Foto)" class="card-img-top" alt="Imagen del producto" style="width: 100%; height: 150px; object-fit: contain;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" style="margin-bottom: 15px;">@producto.Nombre</h5>
+                        <p class="card-text"><strong>Código:</strong> @producto.Codigo_Producto</p>
+
+                        <!-- Formulario para ingresar stock inicial -->
+                        <form method="post" action="@Url.Action("ActualizarStock", "Stock")" onsubmit="return validarStock(event, @producto.ProductoID)">
+                            <input type="hidden" name="id" value="@producto.ProductoID" />
+                            <label for="stock" class="form-label">Ingresar Stock Inicial</label>
+                            <input type="number" class="form-control" name="nuevoStock" id="stock-@producto.ProductoID" min="0" value="0" required style="text-align: center; width: 100px;">
+                            <div id="error-@producto.ProductoID" class="text-danger" style="display: none;">El stock no puede ser 0.</div>
+                            <button type="submit" class="btn btn-success mt-2">Actualizar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <h3 class="d-inline-flex align-items-center p-3" style="background-color: #d4edda; border-radius: 5px;">
+        <i class="fa-solid fa-chart-line" style="color: #74C0FC; font-size: 1.5em; margin-right: 10px;"></i>
+        Con Stock
+    </h3>
+
+    <div class="row">
+        @if (!productosConStock.Any())
+        {
+            <h4>No hay productos con stock.</h4>
+        }
+        else
+        {
+            foreach (var producto in productosConStock)
+            {
+                var stock = stockDictionary.ContainsKey(producto.ProductoID) ? stockDictionary[producto.ProductoID] : null;
+                <div class="col-md-4 mb-4">
+                    <div class="card" style="min-height: 300px;">
+                        <img src="@Url.Content(producto.Foto)" class="card-img-top" alt="Imagen del producto" style="width: 100%; height: 150px; object-fit: contain;">
+                        <div class="card-body text-center">
+                            <h5 class="card-title" style="margin-bottom: 15px;">@producto.Nombre</h5>
+                            <p class="card-text"><strong>Código:</strong> @producto.Codigo_Producto</p>
+                            <p class="card-text"><strong>Stock Actual:</strong> @(stock?.StockActual ?? 0)</p>
+
+                            <!-- Botón para reabastecimiento -->
+                            <form method="post" action="@Url.Action("LlenarStock", "Stock")" id="form-@producto.ProductoID">
+                                <input type="hidden" name="id" value="@producto.ProductoID" />
+                                <div id="reabastecimiento-section-@producto.ProductoID" style="display: none;">
+                                    <label for="nuevoStock" class="form-label">Ingresar nuevo stock</label>
+                                    <input type="number" class="form-control" name="nuevoStock" min="1" required placeholder="Ingrese cantidad" id="stock-reabastecimiento-@producto.ProductoID" style="text-align: center; width: 100px;">
+                                    <div id="error-reabastecimiento-@producto.ProductoID" class="text-danger" style="display: none;">El stock no puede ser 0.</div>
+                                </div>
+                                <button type="button" class="btn btn-primary mt-2" id="reabastecer-btn-@producto.ProductoID" onclick="btReabastecimiento(@producto.ProductoID)">
+                                    Reabastecimiento
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function validarStock(event, productId) {
+        const stockInput = $(`#stock-${productId}`);
+        const errorDiv = $(`#error-${productId}`);
+        const stockValue = parseInt(stockInput.val());
+
+        // Ocultar la alerta antes de realizar la validación
+        errorDiv.hide();
+
+        if (stockValue <= 0) {
+            event.preventDefault(); // Evita que el formulario se envíe
+            errorDiv.show(); // Muestra el mensaje de error
+            stockInput.addClass("is-invalid"); // Agrega clase de Bootstrap para mostrar error en el campo
+            return false; // No permite el envío si la validación falla
+        } else {
+            errorDiv.hide(); // Oculta el mensaje de error si la validación es correcta
+            stockInput.removeClass("is-invalid"); // Elimina la clase de error si la validación es correcta
+        }
+        return true; // Permite el envío si la validación es correcta
+    }
+
+    function btReabastecimiento(productId) {
+        const section = $(`#reabastecimiento-section-${productId}`);
+        const stockInput = $(`#stock-reabastecimiento-${productId}`);
+        const errorDiv = $(`#error-reabastecimiento-${productId}`);
+        const button = $(`#reabastecer-btn-${productId}`);
+
+        if (section.is(':hidden')) {
+            section.show();
+            button.text("Guardar");
+        } else {
+            const inputValue = parseInt(stockInput.val());
+            
+            if (inputValue === 0) {
+                stockInput.addClass("is-invalid");
+                errorDiv.show(); // Muestra el mensaje de error
+                return; // No permite guardar con stock 0
+            } else {
+                stockInput.removeClass("is-invalid");
+                errorDiv.hide();
+                $(`#form-${productId}`).submit(); // Envía el formulario
+            }
+        }
+    }
+</script>

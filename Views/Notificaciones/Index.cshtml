@@ -1,0 +1,49 @@
+﻿@model IEnumerable<WebGradu.Models.Stock>
+
+@{
+    
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center">
+        <i class="fa-solid fa-triangle-exclamation fa-bounce" style="color: #FFD43B;"></i>
+        Productos con Stock Bajo
+    </h1>
+    <br />
+
+    <div class="row">
+        @foreach (var stock in Model)
+        {
+            if (stock.Producto != null)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0">@stock.Producto.Nombre</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <!-- Muestra la imagen del producto con la URL segura de Cloudinary -->
+                            <img src="@stock.Producto.Foto" alt="@stock.Producto.Nombre" class="img-fluid mb-3" style="max-height: 150px; width: auto;" />
+
+                            <p><strong>Código:</strong> @stock.Producto.Codigo_Producto</p>
+                            <p class="text-danger">
+                                <strong>Stock Actual:</strong> @stock.StockActual
+                            </p>
+
+                            <!-- Formulario para actualizar el stock -->
+                            <form method="post" action="@Url.Action("LlenarStock", "Stock")">
+                                <input type="hidden" name="id" value="@stock.Fk_Producto" />
+                                <div class="mb-3">
+                                    <label for="nuevoStock" class="form-label">Actualizar Stock</label>
+                                    <input type="number" name="nuevoStock" class="form-control" min="1" required />
+                                </div>
+                                <button type="submit" class="btn btn-success">Actualizar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
