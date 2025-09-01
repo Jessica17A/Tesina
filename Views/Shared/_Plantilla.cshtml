@@ -107,122 +107,98 @@
     </style>
 </head>
 <body>
-    <!-- Menú de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <!-- Cambiado a navbar-expand-lg -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#1E3A8A;">
         <div class="container-fluid">
-            <!-- Contenedor fluid para que ocupe todo el ancho -->
-            <!-- Enlace de Inicio -->
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
 
-            <!-- Botón para colapsar en pantallas pequeñas -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Contenido colapsable -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Añadido ID para el colapso -->
-                <!-- Pestañas de menú alineadas a la izquierda -->
-                <ul class="navbar-nav me-auto">
+            <div class="collapse navbar-collapse" id="mainNav">
+                <!-- IZQUIERDA -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Usuarios -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Usuarios
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Crear </a>
-                            <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Listado</a>
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Usuarios</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">Crear</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Listado</a></li>
                         </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Productos
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Productos" asp-action="Crear">Crear</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Stock" asp-action="Index">Catálogo</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Notificaciones" asp-action="Index">Stock Bajo</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Categoría
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Categorias" asp-action="Index">Listado</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Ventas
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Ventas" asp-action="Crear">Registrar </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="Ventas" asp-action="Index">Historial </a>
-                            </li>
-                          
-                        </ul>
-                    </li>
-                   
-
-                <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Rendimiento
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                   <li>
-                        <a class="dropdown-item" asp-area="" asp-controller="Caja" asp-action="Index">Cuadres </a>
                     </li>
 
-                    <li>
-                        <a class="dropdown-item" asp-area="" asp-controller="Graficos" asp-action="Index">Resultados </a>
+                    <!-- Productos -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Productos</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Productos" asp-action="Crear">Crear</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Stock" asp-action="Index">Catálogo</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Notificaciones" asp-action="Index">Stock Bajo</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Categoría -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categoría</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Categorias" asp-action="Index">Listado</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Ventas -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Ventas</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Ventas" asp-action="Crear">Registrar</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Ventas" asp-action="Index">Historial</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Rendimiento -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Rendimiento</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Caja" asp-action="Index">Cuadres</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Graficos" asp-action="Index">Resultados</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Reportes -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Reportes</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-area="" asp-controller="ReportesPdf" asp-action="GenerarCuadres">Generar Reporte</a></li>
+                        </ul>
                     </li>
                 </ul>
-                </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Reportes
+                <!-- DERECHA -->
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link px-2" asp-area="Identity" asp-page="/Account/Manage/ChangePassword" title="Perfil">
+                            <i class="bi bi-person-circle fs-4 text-white"></i>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" asp-area="" asp-controller="ReportesPdf" asp-action="GenerarCuadres">Generar Reporte </a>
-                            </li>
-                        </ul>
                     </li>
-                               
+                    <li class="nav-item ms-3">
+                        <!-- 👈 agregado ms-3 para más espacio -->
+                        <form method="post" class="d-inline"
+                              asp-area="Identity" asp-page="/Account/Logout"
+                              asp-route-returnUrl='@Url.Action("Index", "Home", new { area = "" })'>
+                            <button type="submit"
+                                    class="btn nav-link text-white d-flex align-items-center px-2"
+                                    style="background:none;border:none;">
+                                <i class="bi bi-box-arrow-right me-1"></i>
+                                <span class="d-none d-sm-inline">Cerrar Sesión</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+                <!-- /DERECHA -->
+
             </div>
         </div>
-
-        <div class="d-flex align-items-center">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/ChangePassword" title="Manage">
-                        <i class="bi bi-person-fill" style="font-size: 2rem; color: blue;"></i>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                        <button type="submit" class="nav-link btn btn-link text-white" style="font-size: 1.25rem;">
-                            <i class="bi bi-box-arrow-right"></i>
-                            Salir
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </div>
     </nav>
+
 
     <!-- Contenido principal -->
     <div class="container-fluid">
