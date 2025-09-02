@@ -1,100 +1,170 @@
 ﻿@model WebGradu.Models.Producto
-
 @{
     ViewData["Title"] = "Crear Producto";
-    Layout = "~/Views/Shared/_Plantilla.cshtml";
-    Layout = "~/Views/Shared/_Vendedor.cshtml";
 }
 
-<div class="container mt-5" style="max-width: 900px;">
-    <!-- Tamaño reducido -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex" style="background-color: #e8e493 ; padding: 20px; border-radius: 4px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-                <!-- Columna para la imagen y el formulario juntos -->
-                <div class="d-flex align-items-center" style="margin-right: 40px;">
-                    <img src="~/img/crear_producto.jpg" alt="Imagen del Producto" class="img-fluid" style="max-height: 300px; width: 450px; object-fit: cover; border-radius: 5px;" />
-                </div>
+<style>
+    .steps-visual {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        max-width: 900px;
+        margin: 0 auto 16px;
+    }
 
-                <!-- Columna para el formulario -->
-                <div class="card p-4 shadow-sm" style="background-color: #fff7ef ; max-width: 500px;">
-                    <form asp-action="Crear" method="post" enctype="multipart/form-data">
-                        <h2 class="mb-4 text-center">Crear Producto</h2>
+    .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+        color: #000f89;
+        min-width: 72px;
+        text-align: center
+    }
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Nombre" class="form-label" style="text-align: left !important;"></label>
-                            <input asp-for="Nombre" class="form-control" style="max-width: 450px;" placeholder="Nombre del producto" required />
-                            <span asp-validation-for="Nombre" class="text-danger"></span>
-                        </div>
+    .step-icon {
+        width: 64px;
+        height: 64px;
+        border: 3px solid #000f89;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        margin-bottom: 8px;
+        font-size: 26px
+    }
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Descripcion" class="form-label" style="text-align: left !important;"></label>
-                            <textarea asp-for="Descripcion" class="form-control" style="max-width: 450px;" rows="3" placeholder="Descripción del producto" required></textarea>
-                            <span asp-validation-for="Descripcion" class="text-danger"></span>
-                        </div>
+    .steps-visual .connector {
+        flex: 1;
+        height: 3px;
+        background: #000f89;
+        opacity: .3
+    }
 
-                        <div class="form-group mb-3">
-                            <label class="form-label" style="text-align: left !important;">Precio de Compra</label>
-                            <input name="Precio_Compra" class="form-control" style="max-width: 450px;" type="number" step="0.01" placeholder="Precio de Compra" required />
-                            <span asp-validation-for="Precio_Compra" class="text-danger"></span>
-                        </div>
+    .form-card {
+        background: transparent;
+        border: 2px solid #000f89;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+        padding: 24px;
+        max-width: 650px;
+        margin: 0 auto;
+    }
 
-                        <div class="form-group mb-3">
-                            <label class="form-label" style="text-align: left !important;">Precio de Venta</label>
-                            <input name="Precio_Venta" class="form-control" style="max-width: 450px;" type="number" step="0.01" placeholder="Precio de Venta" required />
-                            <span asp-validation-for="Precio_Venta" class="text-danger"></span>
-                        </div>
+    .label-required::after {
+        content: " *";
+        color: #dc3545;
+        font-weight: 600
+    }
 
+    .preview-img {
+        max-height: 120px
+    }
+</style>
 
-
-                        <div class="form-group mb-3">
-                            <label for="Fk_Categoria" class="form-label" style="text-align: left !important;">Categoría</label>
-                            <select asp-for="Fk_Categoria" class="form-control" asp-items="@(new SelectList(ViewBag.Categorias, "CategoriaID", "NombreCategoria"))" style="max-width: 450px;">
-                                <option value="">Seleccione una categoría</option>
-                            </select>
-                            <span asp-validation-for="Fk_Categoria" class="text-danger"></span>
-                        </div>
-
-
-                        <!-- Select para la Categoría -->
-                        @* <div class="form-group mb-3">
-                        <label for="CategoriaID" class="form-label" style="text-align: left !important;">Categoría</label>
-                        <select asp-for="FkCategoria" class="form-control" asp-items="ViewBag.Categorias" style="max-width: 450px;">
-                        <option value="">Seleccione una categoría</option>
-                        </select>
-                        <span asp-validation-for="FkCategoria" class="text-danger"></span>
-                        </div> *@
-
-                        <div class="form-group mb-4">
-                            <label for="file" class="form-label" style="text-align: left !important;">Subir Foto</label>
-                            <input type="file" name="file" class="form-control" style="max-width: 450px;" />
-                        </div>
-
-                        <button type="submit" class="btn btn-success" style="width: 80px;">
-                            <i class="fa-solid fa-folder-arrow-up"></i> Crear
-                        </button>
-                    </form>
-
-                    <!-- Incluye SweetAlert -->
-                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-                    <script>
-                        // Mostrar la alerta si TempData["ProductoCreado"] está presente
-                        @if (TempData["ProductoCreado"] != null)
-                        {
-                            <text>
-                                Swal.fire({
-                                    title: 'Producto Creado',
-                                    text: 'El producto ha sido creado exitosamente.',
-                                    icon: 'success',
-                                    confirmButtonText: 'OK'
-                                });
-                            </text>
-                        }
-                    </script>
-
-                </div>
-            </div>
+<div class="container mt-5" style="max-width:980px;">
+    <!-- Barra de iconos (solo visual) -->
+    <div class="steps-visual">
+        <div class="step-item">
+            <div class="step-icon"><i class="fa-solid fa-box"></i></div>
+            <span>Producto</span>
+        </div>
+        <div class="connector"></div>
+        <div class="step-item">
+            <div class="step-icon"><i class="fa-solid fa-tag"></i></div>
+            <span>Precios</span>
+        </div>
+        <div class="connector"></div>
+        <div class="step-item">
+            <div class="step-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <span>Categoría</span>
         </div>
     </div>
+</div>
+
+<div class="form-card">
+    <form asp-action="Crear" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
+        <h2 class="mb-4 text-center">Crear Producto</h2>
+
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label asp-for="Nombre" class="form-label label-required"></label>
+            <input asp-for="Nombre" class="form-control" placeholder="Nombre del producto" required />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Descripcion" class="form-label label-required"></label>
+            <textarea asp-for="Descripcion" class="form-control" rows="3" placeholder="Descripción del producto" required></textarea>
+            <span asp-validation-for="Descripcion" class="text-danger"></span>
+        </div>
+
+        <!-- Precios en dos columnas con símbolo de moneda -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label label-required">Precio de Compra</label>
+                <div class="input-group">
+                    <span class="input-group-text">Q</span>
+                    <input name="Precio_Compra" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" required />
+                </div>
+                <span asp-validation-for="Precio_Compra" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label label-required">Precio de Venta</label>
+                <div class="input-group">
+                    <span class="input-group-text">Q</span>
+                    <input name="Precio_Venta" class="form-control" type="number" step="0.01" min="0" placeholder="0.00" required />
+                </div>
+                <span asp-validation-for="Precio_Venta" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3 mt-3">
+            <label for="Fk_Categoria" class="form-label label-required">Categoría</label>
+            <select asp-for="Fk_Categoria" class="form-control"
+                    asp-items="@(new SelectList(ViewBag.Categorias, "CategoriaID", "NombreCategoria"))" required>
+                <option value="">Seleccione una categoría</option>
+            </select>
+            <span asp-validation-for="Fk_Categoria" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label for="file" class="form-label">Subir Foto</label>
+            <input id="file" type="file" name="file" class="form-control" accept="image/*" aria-describedby="fileHelp" />
+          
+            <img id="preview" class="preview-img img-thumbnail mt-2 d-none" alt="Vista previa" />
+        </div>
+
+        <div class="d-flex justify-content-center gap-2">
+            <button id="btnGuardar" type="submit" class="btn btn-outline-primary">
+                <i class="fa-regular fa-floppy-disk me-1" aria-hidden="true"></i>
+                <span>Guardar</span>
+            </button>
+           
+        </div>
+    </form>
+@* 
+    <script>        
+
+        // Evitar doble submit (spinner opcional)
+        const form = document.querySelector('form');
+        const btn = document.getElementById('btnGuardar');
+        form?.addEventListener('submit', () => {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Guardando...';
+        });
+    </script> *@
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (TempData["ProductoCreado"] != null)
+    {
+        <script>
+            Swal.fire({ title: 'Producto Creado', text: 'El producto ha sido creado exitosamente.', icon: 'success', confirmButtonText: 'OK' });
+        </script>
+    }
 </div>

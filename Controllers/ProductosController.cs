@@ -41,7 +41,7 @@ namespace WebGradu.Controllers
             return View();
         }
 
-        // Método para manejar la creación de un producto con imagen
+        
         [HttpPost]
         public async Task<IActionResult> Crear(Producto producto, IFormFile file)
         {
@@ -80,7 +80,7 @@ namespace WebGradu.Controllers
             _context.Productos.Add(producto);
             await _context.SaveChangesAsync();
 
-            TempData["ProductoCreado"] = "true"; // Almacena en TempData para la alerta
+            TempData["ProductoCreado"] = "true"; 
 
             return RedirectToAction("Crear");
         }

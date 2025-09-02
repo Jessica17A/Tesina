@@ -1,15 +1,20 @@
 ﻿@{
     ViewData["Title"] = "Crear Venta";
 
-    if (User.IsInRole("Admin"))
-    {
-        Layout = "~/Views/Shared/_Plantilla.cshtml";
-    }
-    else if (User.IsInRole("Vendedor"))
-    {
-        Layout = "~/Views/Shared/_Vendedor.cshtml";
-    }
+
+    // if (User?.Identity?.IsAuthenticated == true)
+    // {
+    //     Layout = User.IsInRole("Admin")
+    //         ? "~/Views/Shared/_Plantilla.cshtml"   // Admin
+    //         : "~/Views/Shared/_Vendedor.cshtml";   // Vendedor (u otros roles)
+    // }
+    // else
+    // {
+    //     Layout = "~/Views/Shared/_Layout.cshtml";  // No autenticado
+    // }
 }
+
+
 
 <h1>Crear Venta</h1>
 

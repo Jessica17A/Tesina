@@ -22,36 +22,52 @@ namespace WebGradu.Controllers
         }
 
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Buscar(string query)
         {
-            // Verificar si hay un término de búsqueda
-            if (string.IsNullOrEmpty(query))
-            {
-                // Si no hay consulta, redirigir a la acción Index
+            if (string.IsNullOrWhiteSpace(query))
                 return RedirectToAction(nameof(Index));
-            }
 
-            // Buscar productos que coincidan con el término de búsqueda
+            // Trae productos sin tracking (solo lectura)
             var productos = await _context.Productos
+                .AsNoTracking()
                 .Where(p => p.Nombre.Contains(query) || p.Codigo_Producto.Contains(query))
                 .ToListAsync();
 
-            // Obtener stock para cada producto
+            // ⇩⇩ Resolver URL de imagen para cada producto (igual que en Index)
+            foreach (var p in productos)
+                p.Foto = ResolverUrlFoto(p.Foto);
+
             var stockDictionary = await _context.Stocks
+                .AsNoTracking()
                 .GroupBy(s => s.Fk_Producto)
-                .Select(g => g.OrderByDescending(s => s.StockActual).FirstOrDefault())
+                .Select(g => g.OrderByDescending(s => s.FechaMovimiento).FirstOrDefault())
                 .ToDictionaryAsync(s => s.Fk_Producto);
 
-            // Pasar los productos y el stock a la vista
             ViewData["ProductosSinStock"] = productos.Where(p => !stockDictionary.ContainsKey(p.ProductoID)).ToList();
             ViewData["ProductosConStock"] = productos.Where(p => stockDictionary.ContainsKey(p.ProductoID)).ToList();
             ViewData["StockDictionary"] = stockDictionary;
 
-            return View("Index"); // Asegúrate de que tu vista se llama Index
+            return View("StockGestion"); // o "Index" si esa es tu vista
         }
 
+        // Helper para usar en Index/Buscar
+        private string ResolverUrlFoto(string foto)
+        {
+            if (string.IsNullOrWhiteSpace(foto))
+                return Url.Content("~/img/no-image.png"); // fallback local
+
+            // Si ya es URL absoluta (Cloudinary u otro), la dejamos como está
+            if (foto.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                return foto;
+
+            // Si es un public_id de Cloudinary, genera la URL segura
+            return _cloudinary.Api.UrlImgUp.Secure(true).BuildUrl(foto);
+        }
+
+
         // GET: Stock
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> StockGestion()
         {
             // Obtener productos que no tienen stock registrado
             var productosSinStock = await _context.Productos
@@ -138,7 +154,7 @@ namespace WebGradu.Controllers
             _context.SaveChanges();
             TempData["ActualizacionExitosa"] = true; // Mensaje de éxito
 
-            return RedirectToAction("Index"); // Redirige a la vista adecuada
+            return RedirectToAction("StockGestion"); // Redirige a la vista adecuada
         }
 
 
@@ -172,7 +188,7 @@ namespace WebGradu.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(StockGestion));
         }
     }
 }

@@ -29,6 +29,11 @@
     <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+
 
     <style>
         /* Estilos para eliminar el fondo de los botones */
@@ -133,8 +138,8 @@
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Productos</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" asp-area="" asp-controller="Productos" asp-action="Crear">Crear</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Stock" asp-action="Index">Catálogo</a></li>
-                            <li><a class="dropdown-item" asp-area="" asp-controller="Notificaciones" asp-action="Index">Stock Bajo</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Stock" asp-action="StockGestion">Catálogo</a></li>
+                            <li><a class="dropdown-item" asp-area="" asp-controller="Notificaciones" asp-action="StockGestion">Stock Bajo</a></li>
                         </ul>
                     </li>
 

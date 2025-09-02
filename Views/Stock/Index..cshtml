@@ -5,148 +5,418 @@
     var productosSinStock = ViewData["ProductosSinStock"] as List<WebGradu.Models.Producto> ?? new List<WebGradu.Models.Producto>();
     var productosConStock = ViewData["ProductosConStock"] as List<WebGradu.Models.Producto> ?? new List<WebGradu.Models.Producto>();
     var stockDictionary = ViewData["StockDictionary"] as Dictionary<int, WebGradu.Models.Stock> ?? new Dictionary<int, WebGradu.Models.Stock>();
-  Layout = "~/Views/Shared/_Plantilla.cshtml";
+
+    //Layout = "~/Views/Shared/_Plantilla.cshtml";
 }
 
-<div class="container mt-5">
-    <center>
-        <h1>Gestión de Stock</h1>
-    </center>
+<style>
+    :root {
+        --brand: #000f89;
+        --ink: #0b1736;
+        --muted: #64748b;
+        --soft: #f8fafc;
+    }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            @if (productosSinStock.Any()) // Verificar si hay productos sin stock
-            {
-                <div class="d-inline-flex align-items-center p-3" style="background-color: #f8d7da; border-radius: 5px;">
-                    <i class="fa-solid fa-square-xmark" style="color: #dd085d; font-size: 3em;"></i>
-                    <h3 class="mb-0" style="margin-left: 10px;">Sin Stock Inicial</h3>
+    /* Hero */
+    .stock-hero {
+        border: 2px solid var(--brand);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 28px auto 18px;
+        max-width: 1150px;
+        background: radial-gradient(1200px 200px at -10% -40%, rgba(0,15,137,.06), transparent 60%), radial-gradient(1200px 200px at 110% 140%, rgba(0,15,137,.06), transparent 60%), linear-gradient(180deg, #fff, #f9fbff);
+        box-shadow: 0 0 0 2px rgba(0,15,137,.12) inset, 0 18px 36px rgba(0,0,0,.06);
+    }
+
+        .stock-hero h1 {
+            margin: 0;
+            font-weight: 800;
+            letter-spacing: .2px;
+            color: var(--ink)
+        }
+
+    /* Chips/Badges */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        padding: .45rem .8rem;
+        border-radius: 999px;
+        font-weight: 700;
+        border: 1px solid rgba(0,0,0,.08);
+    }
+
+    .chip-danger {
+        background: #fde8ec;
+        color: #9f1239;
+        border-color: #f5c2c7;
+    }
+
+    .chip-success {
+        background: #e9f7ef;
+        color: #065f46;
+        border-color: #badbcc;
+    }
+
+    .chip-info {
+        background: #eef2ff;
+        color: #1e3a8a;
+        border-color: #c7d2fe;
+    }
+
+    /* Cards */
+    .card-product {
+        height: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid rgba(0,15,137,.18);
+        background: #fff;
+        box-shadow: 0 10px 24px rgba(0,0,0,.06);
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+        .card-product:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 36px rgba(0,15,137,.18);
+            border-color: var(--brand);
+        }
+
+        .card-product .card-img-top {
+            width: 100%;
+            height: 170px;
+            object-fit: contain;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+
+    .card-title {
+        min-height: 48px;
+        font-weight: 800;
+        color: var(--ink)
+    }
+
+    /* Botones */
+    .btn-brand {
+        background: var(--brand);
+        color: #fff;
+        border: 2px solid var(--brand);
+        font-weight: 800;
+        box-shadow: 0 12px 24px rgba(0,15,137,.18)
+    }
+
+        .btn-brand:hover {
+            filter: brightness(1.05)
+        }
+
+    .btn-outline-brand {
+        border: 2px solid var(--brand);
+        color: var(--brand);
+        font-weight: 800
+    }
+
+        .btn-outline-brand:hover {
+            background: var(--brand);
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(0,15,137,.25)
+        }
+
+    /* Inputs */
+    .w-120 {
+        max-width: 120px;
+        margin: 0 auto
+    }
+
+    .input-icon {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+        .input-icon i {
+            position: absolute;
+            left: 12px;
+            color: #64748b;
+        }
+
+        .input-icon input {
+            padding-left: 38px;
+        }
+
+    /* Stock bar (si hay máximo) */
+    .stockbar {
+        height: 8px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+        .stockbar > span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--brand), #6690ff);
+        }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin: 10px 0 14px;
+    }
+
+    /* Feedback Bootstrap */
+    .invalid-feedback {
+        display: none
+    }
+
+    .is-invalid + .invalid-feedback {
+        display: block
+    }
+</style>
+
+<div class="container">
+    <div class="stock-hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h1 class="h4 m-0"><i class="fa-solid fa-warehouse me-2 text-primary"></i> Gestión de Stock</h1>
+
+            <form method="get" action="@Url.Action("Buscar", "Stock")" class="d-flex gap-2">
+                <div class="input-icon" style="max-width:280px; width:100%">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="query" class="form-control" placeholder="Buscar producto..." />
                 </div>
-            }
-        </div>
-        <div>
-            <form method="get" action="@Url.Action("Buscar", "Stock")" class="d-flex">
-                <input type="text" name="query" placeholder="Buscar producto..." class="form-control me-2" style="width: 200px;">
-                <button type="submit" class="btn btn-primary">Buscar</button>
+                <button type="submit" class="btn btn-brand">
+                    Buscar
+                </button>
             </form>
+        </div>
+
+        <div class="mt-3 d-flex flex-wrap gap-2">
+            <span class="chip chip-danger"><i class="fa-solid fa-circle-xmark"></i> Sin stock inicial: <strong>@productosSinStock.Count</strong></span>
+            <span class="chip chip-success"><i class="fa-solid fa-boxes-stacked"></i> Con stock: <strong>@productosConStock.Count</strong></span>
+            <span class="chip chip-info"><i class="fa-solid fa-layer-group"></i> Total: <strong>@(productosSinStock.Count + productosConStock.Count)</strong></span>
         </div>
     </div>
 
     @if (TempData["ActualizacionExitosa"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            Se actualizó el stock exitosamente.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <i class="fa-solid fa-circle-check me-1"></i> Se actualizó el stock exitosamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
         </div>
     }
 
-    <div class="row">
-        @foreach (var producto in productosSinStock)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card" style="min-height: 300px;">
-                    <img src="@Url.Content(producto.Foto)" class="card-img-top" alt="Imagen del producto" style="width: 100%; height: 150px; object-fit: contain;">
-                    <div class="card-body text-center">
-                        <h5 class="card-title" style="margin-bottom: 15px;">@producto.Nombre</h5>
-                        <p class="card-text"><strong>Código:</strong> @producto.Codigo_Producto</p>
+    <!-- =================== SIN STOCK =================== -->
+    @if (productosSinStock.Any())
+    {
+        <div class="section-title">
+            <i class="fa-solid fa-triangle-exclamation text-danger"></i> <span>Productos sin stock inicial</span>
+        </div>
 
-                        <!-- Formulario para ingresar stock inicial -->
-                        <form method="post" action="@Url.Action("ActualizarStock", "Stock")" onsubmit="return validateStock(event, @producto.ProductoID)">
-                            <input type="hidden" name="id" value="@producto.ProductoID" />
-                            <label for="stock" class="form-label">Ingresar Stock Inicial</label>
-                            <input type="number" class="form-control" name="nuevoStock" id="stock-@producto.ProductoID" min="0" value="0" required style="text-align: center; width: 100px;">
-                            <div id="error-@producto.ProductoID" class="text-danger" style="display: none;">El stock no puede ser 0.</div>
-                            <button type="submit" class="btn btn-success mt-2">Actualizar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <h3 class="d-inline-flex align-items-center p-3" style="background-color: #d4edda; border-radius: 5px;">
-        <i class="fa-solid fa-chart-line" style="color: #74C0FC; font-size: 1.5em; margin-right: 10px;"></i>
-        Con Stock
-    </h3>
-
-    <div class="row">
-        @if (!productosConStock.Any())
-        {
-            <h4>No hay productos con stock.</h4>
-        }
-        else
-        {
-            foreach (var producto in productosConStock)
+        <div class="row">
+            @foreach (var producto in productosSinStock)
             {
-                var stock = stockDictionary.ContainsKey(producto.ProductoID) ? stockDictionary[producto.ProductoID] : null;
                 <div class="col-md-4 mb-4">
-                    <div class="card" style="min-height: 300px;">
-                        <img src="@Url.Content(producto.Foto)" class="card-img-top" alt="Imagen del producto" style="width: 100%; height: 150px; object-fit: contain;">
-                        <div class="card-body text-center">
-                            <h5 class="card-title" style="margin-bottom: 15px;">@producto.Nombre</h5>
-                            <p class="card-text"><strong>Código:</strong> @producto.Codigo_Producto</p>
-                            <p class="card-text"><strong>Stock Actual:</strong> @(stock?.StockActual ?? 0)</p>
+                    <div class="card card-product">
+                        <img src="@Url.Content(producto.Foto)"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/img/no-image.png")';"
+                             class="card-img-top" alt="Imagen del producto">
 
-                            <!-- Botón para reabastecimiento -->
-                            <form method="post" action="@Url.Action("LlenarStock", "Stock")" id="form-@producto.ProductoID">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@producto.Nombre</h5>
+                            <p class="text-muted mb-2"><strong class="text-dark">Código:</strong> @producto.Codigo_Producto</p>
+
+                            <form method="post" action="@Url.Action("ActualizarStock", "Stock")"
+                                  class="mt-2 form-inicial" data-pid="@producto.ProductoID" novalidate>
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@producto.ProductoID" />
-                                <div id="reabastecimiento-section-@producto.ProductoID" style="display: none;">
-                                    <label for="nuevoStock" class="form-label">Ingresar nuevo stock</label>
-                                    <input type="number" class="form-control" name="nuevoStock" min="1" required placeholder="Ingrese cantidad" id="stock-reabastecimiento-@producto.ProductoID" style="text-align: center; width: 100px;">
+
+                                <label class="form-label">Stock inicial</label>
+                                <input type="number" class="form-control text-center w-120"
+                                       name="nuevoStock" id="stock-@producto.ProductoID"
+                                       min="1" step="1" value="1" required>
+                                <div id="error-@producto.ProductoID" class="invalid-feedback text-center">
+                                    El stock debe ser mayor que 0.
                                 </div>
-                                <button type="button" class="btn btn-primary mt-2" id="reabastecer-btn-@producto.ProductoID" onclick="toggleReabastecimiento(@producto.ProductoID)">
-                                    Reabastecimiento
+
+                                <button type="submit" class="btn btn-outline-brand mt-3 w-100">
+                                    <i class="fa-solid fa-plus me-1"></i> Registrar
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
             }
-        }
+        </div>
+    }
+
+    <!-- =================== CON STOCK =================== -->
+    <div class="section-title mt-3">
+        <i class="fa-solid fa-boxes-stacked text-success"></i> <span>Productos con stock</span>
     </div>
+
+    @if (!productosConStock.Any())
+    {
+        <div class="alert alert-secondary">No hay productos con stock.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var producto in productosConStock)
+            {
+                var stock = stockDictionary.ContainsKey(producto.ProductoID) ? stockDictionary[producto.ProductoID] : null;
+                var actual = stock?.StockActual ?? 0;
+                var bajo = actual <= 5;
+                var maximo = stock?.StockMaximo ?? 0;
+                var percent = (maximo > 0) ? Math.Min(100, Math.Max(0, (int)Math.Round(actual * 100.0 / maximo))) : -1;
+
+                <div class="col-md-4 mb-4">
+                    <div class="card card-product">
+                        <img src="@Url.Content(producto.Foto)"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/img/no-image.png")';"
+                             class="card-img-top" alt="Imagen del producto">
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@producto.Nombre</h5>
+                            <p class="text-muted mb-1"><strong class="text-dark">Código:</strong> @producto.Codigo_Producto</p>
+
+                            <p class="mb-2">
+                                <strong>Stock Actual:</strong>
+                                <span class="badge @(bajo ? "bg-danger" : "bg-success")">@actual</span>
+                            </p>
+
+                            @if (percent >= 0)
+                            {
+                                <div class="stockbar mb-2" title="Capacidad: @percent%">
+                                    <span style="width:@percent%"></span>
+                                </div>
+                                <small class="text-muted d-block">Capacidad: @percent%</small>
+                            }
+
+                            <form method="post" action="@Url.Action("LlenarStock", "Stock")"
+                                  id="form-@producto.ProductoID" class="mt-3 form-reabastecer"
+                                  data-pid="@producto.ProductoID" novalidate>
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@producto.ProductoID" />
+
+                                <div id="reabastecimiento-section-@producto.ProductoID" class="mt-2" style="display:none">
+                                    <label class="form-label">Nuevo ingreso</label>
+                                    <input type="number" class="form-control text-center w-120"
+                                           name="nuevoStock" id="stock-reabastecimiento-@producto.ProductoID"
+                                           min="1" step="1" placeholder="Cantidad">
+                                    <div id="error-reabast-@producto.ProductoID" class="invalid-feedback text-center">
+                                        Ingrese una cantidad válida.
+                                    </div>
+
+                                    <div class="d-flex gap-2 justify-content-center mt-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-cancelar">Cancelar</button>
+                                        <button type="button" class="btn btn-brand btn-guardar">Guardar</button>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline-brand mt-2 w-100 btn-reabastecer"
+                                        data-pid="@producto.ProductoID" id="reabastecer-btn-@producto.ProductoID">
+                                    <i class="fa-solid fa-truck-ramp-box me-1"></i> Reabastecer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
 
+<!-- jQuery (si ya lo cargas en tu _Layout, puedes quitar esta línea) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- MISMO JS (lógica intacta) -->
 <script>
-    function validateStock(event, productId) {
-        const stockInput = $(#stock-${productId});
-        const errorDiv = $(#error-${productId});
-        const stockValue = parseInt(stockInput.val());
-        
-        // Ocultar la alerta antes de realizar la validación
-        errorDiv.hide(); 
+    (function () {
+      if (!window.jQuery) { console.error("jQuery no cargó. Verifica el script en el _Layout_."); return; }
 
-        if (stockValue <= 0) {
-            event.preventDefault(); // Evita que el formulario se envíe
-            errorDiv.show(); // Muestra el mensaje de error
-            stockInput.addClass("is-invalid"); // Agrega clase de Bootstrap para mostrar error en el campo
-            return false; // No permite el envío si la validación falla
-        } else {
-            errorDiv.hide(); // Oculta el mensaje de error si la validación es correcta
-            stockInput.removeClass("is-invalid"); // Elimina la clase de error si la validación es correcta
-        }
-        return true; // Permite el envío si la validación es correcta
-    }
+      (function ($) {
+        $(function () {
 
-    function toggleReabastecimiento(productId) {
-        const section = $(#reabastecimiento-section-${productId});
-        const stockInput = $(#stock-reabastecimiento-${productId});
-        const button = $(#reabastecer-btn-${productId});
-        
-        if (section.is(':hidden')) {
-            section.show();
-            button.text("Guardar");
-        } else {
-            const inputValue = parseInt(stockInput.val());
-            if (inputValue > 0) {
-                $(#form-${productId}).submit(); // Envía el formulario
-            } else {
-                // Muestra el mensaje de error en el campo
-                const errorDiv = $(#error-${productId});
-                errorDiv.show(); // Muestra el mensaje de error
-                stockInput.addClass("is-invalid"); // Agrega clase de Bootstrap para mostrar error en el campo
-                section.hide();
-                button.text("Reabastecimiento");
+          // STOCK INICIAL: validación en submit
+          $('.container').on('submit', 'form.form-inicial', function (e) {
+            var $form = $(this);
+            var pid = $form.data('pid');
+            var $input = $('#stock-' + pid);
+            var $error = $('#error-' + pid);
+            var val = parseInt(($input.val() || '').toString(), 10);
+
+            $error.hide();
+            $input.removeClass('is-invalid');
+
+            if (isNaN(val) || val <= 0) {
+              e.preventDefault();
+              $error.show();
+              $input.addClass('is-invalid');
+              return false;
             }
-        }
-    }
+            return true;
+          });
+
+          // REABASTECER: mostrar campo y luego enviar
+          $('.container').on('click', '.btn-reabastecer', function () {
+            var pid = $(this).data('pid');
+            var $section = $('#reabastecimiento-section-' + pid);
+            var $input = $('#stock-reabastecimiento-' + pid);
+            var $error = $('#error-reabast-' + pid);
+            var $btn = $('#reabastecer-btn-' + pid);
+            var $form = $('#form-' + pid);
+
+            if ($section.is(':hidden')) {
+              $section.slideDown(150);
+              $btn.html('<i class="fa-solid fa-floppy-disk me-1"></i> Guardar');
+              $input.focus();
+              return;
+            }
+
+            var val = parseInt(($input.val() || '').toString(), 10);
+            $error.hide();
+            $input.removeClass('is-invalid');
+
+            if (!isNaN(val) && val > 0) {
+              $form.trigger('submit');
+            } else {
+              $error.show();
+              $input.addClass('is-invalid');
+            }
+          });
+
+          // Botón cancelar dentro del panel
+          $('.container').on('click', '.btn-cancelar', function () {
+            var $form = $(this).closest('form.form-reabastecer');
+            var $section = $form.find('[id^="reabastecimiento-section-"]');
+            var $btn = $form.find('.btn-reabastecer');
+            var $input = $form.find('input[name="nuevoStock"]');
+
+            $input.val('').removeClass('is-invalid');
+            $section.slideUp(120);
+            $btn.html('<i class="fa-solid fa-truck-ramp-box me-1"></i> Reabastecer');
+          });
+
+          // Guardar dentro del panel (misma lógica de validación)
+          $('.container').on('click', '.btn-guardar', function () {
+            var $form = $(this).closest('form.form-reabastecer');
+            var $input = $form.find('input[name="nuevoStock"]');
+            var $error = $form.find('.invalid-feedback');
+            var val = parseInt(($input.val() || '').toString(), 10);
+
+            $error.hide();
+            $input.removeClass('is-invalid');
+
+            if (!isNaN(val) && val > 0) {
+              $form.trigger('submit');
+            } else {
+              $error.show();
+              $input.addClass('is-invalid');
+            }
+          });
+
+        });
+      })(jQuery);
+    })();
 </script>

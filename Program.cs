@@ -34,6 +34,7 @@ var cloudinary = new Cloudinary(new Account(
 builder.Services.AddSingleton(cloudinary);
 
 var app = builder.Build();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

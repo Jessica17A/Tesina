@@ -1,0 +1,356 @@
+﻿
+@model IEnumerable<WebGradu.Models.Producto>
+
+@{
+    ViewData["Title"] = "Gestión de Stock";
+
+    var productosSinStock = ViewData["ProductosSinStock"] as List<WebGradu.Models.Producto> ?? new List<WebGradu.Models.Producto>();
+    var productosConStock = ViewData["ProductosConStock"] as List<WebGradu.Models.Producto> ?? new List<WebGradu.Models.Producto>();
+    var stockDictionary = ViewData["StockDictionary"] as Dictionary<int, WebGradu.Models.Stock> ?? new Dictionary<int, WebGradu.Models.Stock>();
+
+    // Fuerza el layout correcto (evita que se use el de vendedores)
+    Layout = "~/Views/Shared/_Plantilla.cshtml";
+}
+
+<style>
+    :root {
+        --brand: #000f89;
+        --ink: #0b1736;
+        --muted: #64748b;
+    }
+
+    .stock-hero {
+        border: 2px solid var(--brand);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin: 28px auto 18px;
+        max-width: 1150px;
+        background: radial-gradient(1200px 200px at -10% -40%, rgba(0,15,137,.06), transparent 60%), radial-gradient(1200px 200px at 110% 140%, rgba(0,15,137,.06), transparent 60%), linear-gradient(180deg, #fff, #f9fbff);
+        box-shadow: 0 0 0 2px rgba(0,15,137,.12) inset, 0 18px 36px rgba(0,0,0,.06);
+    }
+
+        .stock-hero h1 {
+            margin: 0;
+            font-weight: 800;
+            color: var(--ink)
+        }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        padding: .45rem .8rem;
+        border-radius: 999px;
+        font-weight: 700;
+        border: 1px solid rgba(0,0,0,.08);
+    }
+
+    .chip-danger {
+        background: #fde8ec;
+        color: #9f1239;
+        border-color: #f5c2c7;
+    }
+
+    .chip-success {
+        background: #e9f7ef;
+        color: #065f46;
+        border-color: #badbcc;
+    }
+
+    .chip-info {
+        background: #eef2ff;
+        color: #1e3a8a;
+        border-color: #c7d2fe;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: .6rem;
+        font-weight: 800;
+        color: var(--ink);
+        margin: 10px 0 14px;
+    }
+
+    .card-product {
+        height: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px solid rgba(0,15,137,.18);
+        background: #fff;
+        box-shadow: 0 10px 24px rgba(0,0,0,.06);
+        transition: transform .18s, box-shadow .18s, border-color .18s;
+    }
+
+        .card-product:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 36px rgba(0,15,137,.18);
+            border-color: var(--brand);
+        }
+
+        .card-product .card-img-top {
+            width: 100%;
+            height: 170px;
+            object-fit: contain;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+
+    .card-title {
+        min-height: 48px;
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .btn-brand {
+        background: var(--brand);
+        color: #fff;
+        border: 2px solid var(--brand);
+        font-weight: 800;
+        box-shadow: 0 12px 24px rgba(0,15,137,.18);
+    }
+
+        .btn-brand:hover {
+            filter: brightness(1.05);
+        }
+
+    .btn-outline-brand {
+        border: 2px solid var(--brand);
+        color: var(--brand);
+        font-weight: 800;
+    }
+
+        .btn-outline-brand:hover {
+            background: var(--brand);
+            color: #fff;
+            box-shadow: 0 12px 24px rgba(0,15,137,.25);
+        }
+
+    .w-120 {
+        max-width: 120px;
+        margin: 0 auto;
+    }
+
+    .stockbar {
+        height: 8px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+        .stockbar > span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--brand), #6690ff);
+        }
+
+    .invalid-feedback {
+        display: none;
+    }
+
+    .is-invalid + .invalid-feedback {
+        display: block;
+    }
+</style>
+
+<div class="container">
+
+    <div class="stock-hero">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <h1 class="h4 m-0"><i class="fa-solid fa-warehouse me-2 text-primary"></i> Gestión de Stock</h1>
+
+            <form method="get" action="@Url.Action("Buscar", "Stock")" class="d-flex gap-2">
+                <input type="text" name="query" class="form-control" placeholder="Buscar producto..." style="max-width:280px">
+                <button type="submit" class="btn btn-brand">Buscar</button>
+            </form>
+        </div>
+
+        <div class="mt-3 d-flex flex-wrap gap-2">
+            <span class="chip chip-danger"><i class="fa-solid fa-circle-xmark"></i> Sin stock inicial: <strong>@productosSinStock.Count</strong></span>
+            <span class="chip chip-success"><i class="fa-solid fa-boxes-stacked"></i> Con stock: <strong>@productosConStock.Count</strong></span>
+            <span class="chip chip-info"><i class="fa-solid fa-layer-group"></i> Total: <strong>@(productosSinStock.Count + productosConStock.Count)</strong></span>
+        </div>
+    </div>
+
+    @if (TempData["ActualizacionExitosa"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-1"></i> Se actualizó el stock exitosamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    @* =================== SIN STOCK =================== *@
+    @if (productosSinStock.Any())
+    {
+        <div class="section-title">
+            <i class="fa-solid fa-triangle-exclamation text-danger"></i> <span>Productos sin stock inicial</span>
+        </div>
+
+        <div class="row">
+            @foreach (var producto in productosSinStock)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card card-product">
+                        <img src="@Url.Content(producto.Foto)"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/img/no-image.png")';"
+                             class="card-img-top" alt="Imagen del producto">
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@producto.Nombre</h5>
+                            <p class="text-muted mb-2"><strong class="text-dark">Código:</strong> @producto.Codigo_Producto</p>
+
+                            <form method="post" action="@Url.Action("ActualizarStock", "Stock")"
+                                  class="mt-2 form-inicial" data-pid="@producto.ProductoID" novalidate>
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@producto.ProductoID" />
+
+                                <label class="form-label">Stock inicial</label>
+                                <input type="number" class="form-control text-center w-120"
+                                       name="nuevoStock" id="stock-@producto.ProductoID"
+                                       min="1" step="1" value="1" required>
+                                <div id="error-@producto.ProductoID" class="invalid-feedback text-center">
+                                    El stock debe ser mayor que 0.
+                                </div>
+
+                                <button type="submit" class="btn btn-outline-brand mt-3 w-100">
+                                    <i class="fa-solid fa-plus me-1"></i> Registrar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @* =================== CON STOCK =================== *@
+    <div class="section-title mt-3">
+        <i class="fa-solid fa-boxes-stacked text-success"></i> <span>Productos con stock</span>
+    </div>
+
+    @if (!productosConStock.Any())
+    {
+        <div class="alert alert-secondary">No hay productos con stock.</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var producto in productosConStock)
+            {
+                var stock = stockDictionary.ContainsKey(producto.ProductoID) ? stockDictionary[producto.ProductoID] : null;
+                var actual = stock?.StockActual ?? 0;
+                var bajo = actual <= 5;
+                var maximo = stock?.StockMaximo ?? 0;
+                var percent = (maximo > 0) ? Math.Min(100, Math.Max(0, (int)Math.Round(actual * 100.0 / maximo))) : -1;
+
+                <div class="col-md-4 mb-4">
+                    <div class="card card-product">
+                        <img src="@Url.Content(producto.Foto)"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/img/no-image.png")';"
+                             class="card-img-top" alt="Imagen del producto">
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@producto.Nombre</h5>
+                            <p class="text-muted mb-1"><strong class="text-dark">Código:</strong> @producto.Codigo_Producto</p>
+
+                            <p class="mb-2">
+                                <strong>Stock Actual:</strong>
+                                <span class="badge @(bajo ? "bg-danger" : "bg-success")">@actual</span>
+                            </p>
+
+                            @if (percent >= 0)
+                            {
+                                <div class="stockbar mb-2" title="Capacidad: @percent%">
+                                    <span style="width:@percent%"></span>
+                                </div>
+                                <small class="text-muted d-block">Capacidad: @percent%</small>
+                            }
+
+                            <form method="post" action="@Url.Action("LlenarStock", "Stock")"
+                                  id="form-@producto.ProductoID" class="mt-3 form-reabastecer"
+                                  data-pid="@producto.ProductoID" novalidate>
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@producto.ProductoID" />
+
+                                <div id="reabastecimiento-section-@producto.ProductoID" class="mt-2" style="display:none">
+                                    <label class="form-label">Nuevo ingreso</label>
+                                    <input type="number" class="form-control text-center w-120"
+                                           name="nuevoStock" id="stock-reabastecimiento-@producto.ProductoID"
+                                           min="1" step="1" placeholder="Cantidad">
+                                    <div id="error-reabast-@producto.ProductoID" class="invalid-feedback text-center">
+                                        Ingrese una cantidad válida.
+                                    </div>
+
+                                    <div class="d-flex gap-2 justify-content-center mt-2">
+                                        <button type="button" class="btn btn-outline-secondary btn-cancelar">Cancelar</button>
+                                        <button type="button" class="btn btn-brand btn-guardar">Guardar</button>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn btn-outline-brand mt-2 w-100 btn-reabastecer"
+                                        data-pid="@producto.ProductoID" id="reabastecer-btn-@producto.ProductoID">
+                                    <i class="fa-solid fa-truck-ramp-box me-1"></i> Reabastecer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Si ya cargas jQuery en tu Layout, puedes eliminar esta línea -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    (function () {
+      if (!window.jQuery) { console.error("jQuery no cargó. Verifica el script en el _Plantilla_."); return; }
+
+      (function ($) {
+        $(function () {
+
+          // Stock inicial: validar en submit
+          $(document).on('submit', 'form.form-inicial', function (e) {
+            var pid   = $(this).data('pid');
+            var $inp  = $('#stock-' + pid);
+            var $err  = $('#error-' + pid);
+            var val   = parseInt(($inp.val() || '').toString(), 10);
+
+            $err.hide(); $inp.removeClass('is-invalid');
+            if (isNaN(val) || val <= 0) { e.preventDefault(); $err.show(); $inp.addClass('is-invalid'); }
+          });
+
+          // Reabastecer: solo abrir/cerrar panel
+          $(document).on('click', '.btn-reabastecer', function () {
+            var pid  = $(this).data('pid');
+            var $sec = $('#reabastecimiento-section-' + pid);
+            var $inp = $('#stock-reabastecimiento-' + pid);
+            $sec.is(':hidden') ? $sec.slideDown(150, () => $inp.focus()) : $sec.slideUp(120);
+          });
+
+          // Guardar dentro del panel
+          $(document).on('click', '.btn-guardar', function () {
+            var $form = $(this).closest('form.form-reabastecer');
+            var $inp  = $form.find('input[name="nuevoStock"]');
+            var $err  = $form.find('.invalid-feedback');
+            var val   = parseInt(($inp.val() || '').toString(), 10);
+
+            $err.hide(); $inp.removeClass('is-invalid');
+            if (!isNaN(val) && val > 0) { $form.trigger('submit'); }
+            else { $err.show(); $inp.addClass('is-invalid'); }
+          });
+
+          // Cancelar panel
+          $(document).on('click', '.btn-cancelar', function () {
+            var $form = $(this).closest('form.form-reabastecer');
+            var $sec  = $form.find('[id^="reabastecimiento-section-"]');
+            var $inp  = $form.find('input[name="nuevoStock"]');
+            $inp.val('').removeClass('is-invalid'); $sec.slideUp(120);
+          });
+
+        });
+      })(jQuery);
+    })();
+</script>
